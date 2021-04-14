@@ -58,6 +58,7 @@ public:
   {
     // add the sample to the current audio buffer converting to unsigned 8 bit PCM
     m_currentAudioBuffer[m_audioBufferPos] = (sample + 32768) >> 8;
+   // m_currentAudioBuffer[m_audioBufferPos] = (uint8_t)((sample >> 8) + 128);
     m_audioBufferPos++;
     // have we filled the buffer with data?
     if (m_audioBufferPos == m_bufferSize)

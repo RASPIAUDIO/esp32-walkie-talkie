@@ -14,6 +14,8 @@ void receiveCallback(const uint8_t *macAddr, const uint8_t *data, int dataLen)
   // annoyingly we can't pass an param into this so we need to do a bit of hack to access the EspNowTransport instance
   instance->m_last_packet_received = millis();
   instance->m_output_buffer->add_samples(data, dataLen);
+//for(int i=0; i<dataLen; i++)printf("%02x",data[i]);
+//printf("eof\n");
 }
 
 bool EspNowTransport::begin()

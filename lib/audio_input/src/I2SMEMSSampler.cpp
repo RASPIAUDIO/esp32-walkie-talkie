@@ -24,9 +24,12 @@ void I2SMEMSSampler::configureI2S()
 
 void I2SMEMSSampler::processI2SData(uint8_t *i2sData, size_t bytesRead)
 {
+    
     int32_t *samples = (int32_t *)i2sData;
     for (int i = 0; i < bytesRead / 4; i++)
     {
-        m_sample_sink->add_sample(samples[i] >> 12);
+        m_sample_sink->add_sample(samples[i] >> 14);
     }
+    
+ 
 }

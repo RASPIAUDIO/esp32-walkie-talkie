@@ -6,7 +6,7 @@
 #include "OutputBuffer.h"
 
 // number of frames to try and send at once (a frame is a left and right sample)
-const int NUM_FRAMES_TO_SEND = 256;
+const int NUM_FRAMES_TO_SEND = 64;
 
 void i2s_writer_task(void *param)
 {
@@ -35,9 +35,11 @@ void i2s_writer_task(void *param)
             for (int i = 0; i < NUM_FRAMES_TO_SEND; i++)
             {
               int16_t sample = output->process_sample(raw_samples[i]);
+     
               frames[i * 2] = sample;
               frames[i * 2 + 1] = sample;
             }
+            //printf("eof\n");
             available_bytes = NUM_FRAMES_TO_SEND * 2 * sizeof(uint16_t);
             buffer_position = 0;
           }
@@ -46,10 +48,12 @@ void i2s_writer_task(void *param)
                     available_bytes, &bytes_written, portMAX_DELAY);
           available_bytes -= bytes_written;
           buffer_position += bytes_written;
+         // Serial.println(bytes_written);
         } while (bytes_written > 0);
+      //  } while (available_bytes > 0);
       }
     }
-  }
+ }
 }
 
 void Output::start(i2s_port_t i2s_port, OutputBuffer *output_buffer)
@@ -66,6 +70,6 @@ void Output::start(i2s_port_t i2s_port, OutputBuffer *output_buffer)
 void Output::stop()
 {
   // stop the i2S driver
-  i2s_driver_uninstall(m_i2s_port);
+  //i2s_driver_uninstall(m_i2s_port);
   // NOTE this leaves the task running - there's not really a clean way of terminating tasks
 }

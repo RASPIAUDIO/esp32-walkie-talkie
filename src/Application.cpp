@@ -53,7 +53,7 @@ i2s_pin_config_t i2s_speaker_pins = {
     .bck_io_num = I2S_SPEAKER_SERIAL_CLOCK,
     .ws_io_num = I2S_SPEAKER_LEFT_RIGHT_CLOCK,
     .data_out_num = I2S_SPEAKER_SERIAL_DATA,
-    .data_in_num = I2S_PIN_NO_CHANGE};
+    .data_in_num = I2S_MIC_SERIAL_DATA};
 
 Application::Application()
 {
@@ -74,6 +74,8 @@ Application::Application()
 
 void Application::begin()
 {
+  //Serial.print(I2S_MIC_SERIAL_CLOCK); Serial.print(I2S_MIC_LEFT_RIGHT_CLOCK);Serial.println(I2S_MIC_SERIAL_DATA);
+  //Serial.print(I2S_SPEAKER_SERIAL_CLOCK); Serial.print(I2S_SPEAKER_LEFT_RIGHT_CLOCK); Serial.println(I2S_SPEAKER_SERIAL_DATA);
   // show a flashing indicator that we are trying to connect
   m_indicator_led->set_default_color(0);
   m_indicator_led->set_is_flashing(true, 0xff0000);
@@ -104,19 +106,28 @@ void Application::begin()
   m_indicator_led->set_default_color(0x00ff00);
   m_indicator_led->set_is_flashing(false, 0x00ff00);
   // setup the transmit button
-  pinMode(GPIO_TRANSMIT_BUTTON, INPUT_PULLDOWN);
+  //pinMode(GPIO_TRANSMIT_BUTTON, INPUT_PULLDOWN);
+  gpio_reset_pin((gpio_num_t)GPIO_TRANSMIT_BUTTON);
+  gpio_set_direction( (gpio_num_t)GPIO_TRANSMIT_BUTTON, GPIO_MODE_INPUT);
+  gpio_set_pull_mode( (gpio_num_t)GPIO_TRANSMIT_BUTTON ,GPIO_PULLUP_ONLY);
+  // Power enable
+    gpio_reset_pin(PW);
+    gpio_set_direction(PW, GPIO_MODE_OUTPUT);
+    gpio_set_level(PW, 1);
   // start both the input and output I2S devices
   Serial.println("Starting I2S Output");
   m_output->start(I2S_NUM_0, i2s_speaker_pins, m_output_buffer);
   Serial.println("Starting I2S Input");
-  m_input->start(I2S_NUM_1, i2sMemsConfig, m_transport);
+  m_input->start(I2S_NUM_0, i2sMemsConfig, m_transport);
 }
 
 void Application::loop()
 {
   unsigned long current_time = millis();
   // run the application state machine
-  bool transmit_pushed = digitalRead(GPIO_TRANSMIT_BUTTON);
+  bool transmit_pushed =  !digitalRead(GPIO_TRANSMIT_BUTTON);
+ // Serial.println(transmit_pushed);
+ //Serial.println(transmit_pushed);
   switch (m_current_state)
   {
   // the application is waiting for the user to push the transmit button or for audio packets to arrive
@@ -134,6 +145,7 @@ void Application::loop()
       {
         m_indicator_led->set_is_flashing(true, 0xff0000);
         m_current_state = TRANSMITTING;
+        Serial.println("transmitting");
         m_transport->should_send(true);
       }
     }

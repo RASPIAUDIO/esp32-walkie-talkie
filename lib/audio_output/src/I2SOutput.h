@@ -17,7 +17,7 @@ public:
     {
         // I2S needs signed 16 bit samples
         int16_t processed = sample;
-        return (processed - 128) << 5;
+        return (processed - 128) << 7;
     }
 };
 
