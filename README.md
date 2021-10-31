@@ -13,19 +13,7 @@ With the test I have made I could only achieve 50m range, this is not great I th
 
 # Setup
 
-Everything is configured from the `src/config.h` file. To use UDP Broadcast comment out the line:
-
-```
-#define USE_ESP_NOW
-```
-
-Make sure you update the WiFi SSID and Password:
-
-```
-// WiFi credentials
-#define WIFI_SSID << YOUR_SSID >>
-#define WIFI_PSWD << YOUR_PASSWORD >>
-```
+Everything is configured from the `src/config.h` file. 
 
 The pins for the microphone and the amplifier board are all setup in the same `config.h` file.
 
